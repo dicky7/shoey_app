@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
 import 'package:shoes_app/presentation/widget/cart_card.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class CartPage extends StatelessWidget {
   static const routeName = "cart-page";
@@ -76,6 +77,7 @@ class CartPage extends StatelessWidget {
 
   Widget buildCartList(BuildContext context){
     return ListView(
+      padding: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
       children: [
         CartCard(),
         CartCard(),
@@ -130,6 +132,7 @@ class CartPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
               ),
               onPressed: () {
+                Navigator.pushNamed(context, CheckoutPage.routeName);
 
               },
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 import '../../widget/custom_button.dart';
 

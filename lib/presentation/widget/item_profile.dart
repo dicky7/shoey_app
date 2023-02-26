@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class ItemProfile extends StatelessWidget {
   final IconData icon;

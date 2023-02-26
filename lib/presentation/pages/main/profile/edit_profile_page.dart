@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class EditProfilePage extends StatelessWidget {
   static const routeName = "edit-profile";
@@ -26,9 +26,11 @@ class EditProfilePage extends StatelessWidget {
           title: Text("Edit Profile", style: TextStyle(color: kBlackColor)),
           leading: BackButton(color: kBlackColor),
         ),
-        body: Container(
-          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
-          child: buildInputSection(),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+            child: buildInputSection(),
+          ),
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/widget/product_item.dart';
 import 'package:shoes_app/utils/helper_utils.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 import '../../../../data/models/product_model.dart';
 
@@ -192,7 +192,7 @@ class HomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           final product = productList[index];
           return Transform.translate(
-            offset: Offset(0.0, index.isOdd ? 35 : 0),
+            offset: Offset(0.0, index.isOdd ? 35 : 0),      //this code to make ProductItem look stagered or not "sejajar"
             child: ProductItem(
               product: product,
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/widget/chat_bubble.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class DetailChatPage extends StatelessWidget {
   static const routeName = "detail-chat";

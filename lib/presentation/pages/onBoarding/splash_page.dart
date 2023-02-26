@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/get_started_page.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class SplashPage extends StatefulWidget {
   static const routeName = "/splash";
@@ -17,7 +17,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushNamed(context, GetStartedPage.routeName);
+      Navigator.pushReplacementNamed(context, GetStartedPage.routeName);
     });
   }
   @override

@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/main/profile/edit_profile_page.dart';
+import 'package:shoes_app/presentation/pages/main/profile/my_order_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_up_page.dart';
 import 'package:shoes_app/presentation/widget/item_profile.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class ProfilePage extends StatelessWidget {
   static const routeName = "profile-page";
@@ -86,7 +87,13 @@ class ProfilePage extends StatelessWidget {
             Navigator.pushNamed(context, EditProfilePage.routeName);
           },
         ),
-        ItemProfile(icon: Icons.shopping_cart, text: "My Order"),
+        ItemProfile(
+            icon: Icons.shopping_cart,
+            text: "My Order",
+            onTap: () {
+              Navigator.pushNamed(context, MyOrderPage.routeName);
+            },
+        ),
         ItemProfile(icon: Icons.notifications, text: "Notifications"),
         ItemProfile(icon: Icons.security, text: "Security"),
         ItemProfile(icon: Icons.privacy_tip, text: "Privacy"),

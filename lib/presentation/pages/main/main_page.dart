@@ -4,7 +4,7 @@ import 'package:shoes_app/presentation/pages/main/chat/chat_page.dart';
 import 'package:shoes_app/presentation/pages/main/favorite/favorite_page.dart';
 import 'package:shoes_app/presentation/pages/main/home/home_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/profile_page.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = "main-page";
@@ -42,7 +42,6 @@ class _MainPageState extends State<MainPage> {
         return const HomePage();
 
     }
-      
   }
 
 
@@ -50,8 +49,9 @@ class _MainPageState extends State<MainPage> {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
       child: BottomAppBar(
+        padding: const EdgeInsets.only(top: 7),
         shape: const CircularNotchedRectangle(),
-        notchMargin: 12,
+        notchMargin: 13,
         clipBehavior: Clip.antiAlias,
         child: BottomNavigationBar(
           backgroundColor: kPrimaryColor,
@@ -71,8 +71,8 @@ class _MainPageState extends State<MainPage> {
               ),
               label: ""
             ),
-            const BottomNavigationBarItem(
-                icon: Icon(null),
+            BottomNavigationBarItem(
+                icon: Icon(null, color: kTransparentColor),
                 label: "",
             ),
             BottomNavigationBarItem(
@@ -105,7 +105,7 @@ class _MainPageState extends State<MainPage> {
     return FloatingActionButton(
       backgroundColor: kPrimaryColor,
       child: Icon(
-        Icons.shopping_bag_outlined,
+        Icons.shopping_cart_outlined,
         color: kGreyColor,
       ),
       onPressed: () {

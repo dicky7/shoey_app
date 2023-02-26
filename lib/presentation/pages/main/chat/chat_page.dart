@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/widget/chat_tile.dart';
 
-import '../../../../utils/styles.dart';
+import '../../../../utils/style/styles.dart';
 
 class ChatPage extends StatelessWidget {
   static const routeName = "chat-page";

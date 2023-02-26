@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:shoes_app/data/models/product_model.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
-class CartCard extends StatelessWidget {
-  const CartCard({Key? key}) : super(key: key);
+class CheckoutItemCard extends StatelessWidget {
+  const CheckoutItemCard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 25),
-      padding: const EdgeInsets.all(13),
+      margin: const EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 17),
       decoration: BoxDecoration(
         color: kPrimaryColor,
         borderRadius: BorderRadius.circular(20),
@@ -36,26 +36,12 @@ class CartCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // NAME PRODUCT AND ICON TRASH
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Terrex Urban Lows ",
-                        style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 20),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    IconButton(
-                      icon: Icon(Icons.delete_outlined, color: kBlackColor),
-                      iconSize: 30,
-                      onPressed: () {
-
-                      },
-                    )
-                  ],
+                Text(
+                  "Terrex Urban Lows ",
+                  style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                SizedBox(height: 10),
 
                 // COLOR and Size
                 Row(
@@ -84,46 +70,18 @@ class CartCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
                     ),
                     const SizedBox(width: 5),
-                    Container(
-                      width: 115,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: kGreyColor.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(13)
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: IconButton(
-                              icon: Icon(Icons.remove, color: kBlackColor),
-                              iconSize: 15,
-                              onPressed:() {
-
-                              },
-                            ),
-                          ),
-                          Text(
-                            "10",
-                            style: Theme.of(context).textTheme.subtitle2?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-
-                          Center(
-                            child: IconButton(
-                              icon: Icon(Icons.add, color: kBlackColor),
-                              iconSize: 15,
-                              onPressed: () {
-
-                              },
-                            ),
-                          )
-                        ],
+                    CircleAvatar(
+                      maxRadius: 20,
+                      backgroundColor: kGreyColor.withOpacity(0.5),
+                      child: Center(
+                        child: Text(
+                          "10",
+                          style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 17),
+                        ),
                       ),
                     )
                   ],
                 ),
-
               ],
             ),
           )

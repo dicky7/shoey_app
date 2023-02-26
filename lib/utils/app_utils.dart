@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 void showErrorSnackbar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -27,7 +27,13 @@ void showSuccessSnackbar(BuildContext context, String message) {
 /*
 using Future<void> because showDialog return future too
  */
-Future<void> showSuccessDialog(BuildContext context)async{
+Future<void> showCustomDialog(
+    {required BuildContext context,
+    required IconData icons,
+    required String title,
+    required String content,
+    required String buttonTitle,
+    required Function() onPressed})async{
   return showDialog(
     context: context,
     builder: (context) {
@@ -42,18 +48,18 @@ Future<void> showSuccessDialog(BuildContext context)async{
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.check_circle_outline,
+                icons,
                 color: kBlackColor,
                 size: 100,
               ),
               const SizedBox(height: 12),
               Text(
-                "hurray :)",
+                title,
                 style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor),
               ),
               const SizedBox(height: 12),
               Text(
-                "Item added successfully",
+                content,
                 style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
               ),
               const SizedBox(height: 20),
@@ -65,15 +71,55 @@ Future<void> showSuccessDialog(BuildContext context)async{
                     borderRadius: BorderRadius.circular(10)
                 ),
                 child: TextButton(
+                  onPressed: onPressed,
                   child: Text(
-                    "View My Cart",
+                    buttonTitle,
                     style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
-                  ),
-                  onPressed: () {
-
-                  },
+                  )
                 ),
               )
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Future<void> showCustomDialogError({
+  required BuildContext context,
+  required IconData icons,
+  required String title,
+  required String content})async{
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return SizedBox(
+        width: double.infinity,    // width will take phone with but giving litle space with (2 * 30)
+        child: AlertDialog(
+          backgroundColor: kPrimaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icons,
+                color: kBlackColor,
+                size: 100,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                content,
+                style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_app/utils/app_utils.dart';
 import 'package:shoes_app/utils/helper_utils.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class DetailProductPage extends StatefulWidget {
@@ -115,10 +115,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
           children: [
             buildNameProduct(context),
             const SizedBox(height: 10),
-            Divider(color: kGreyColor, thickness: 1),
+            Divider(color: kGreyColor.withOpacity(0.5), thickness: 1),
             const SizedBox(height: 15),
             buildProductDesc(context),
-            const SizedBox(height: 25),
+            const SizedBox(height: 35),
           ]
       ),
     );
@@ -310,10 +310,10 @@ class _DetailProductPageState extends State<DetailProductPage> {
           color: kPrimaryColor,
           boxShadow: [ // so here your custom shadow goes:
             BoxShadow(
-              color: Colors.black.withAlpha(20), // the color of a shadow, you can adjust it
-              spreadRadius: 3, //also play with this two values to achieve your ideal result
-              blurRadius: 5,
-              offset: Offset(0, -3), // changes position of shadow, negative value on y-axis makes it appering only on the top of a container
+              color: kGreyColor.withOpacity(0.1), // the color of a shadow, you can adjust it
+              spreadRadius: 1, //also play with this two values to achieve your ideal result
+              blurRadius: 4,
+              offset: Offset(0, -4), // changes position of shadow, negative value on y-axis makes it appering only on the top of a container
             ),
           ],
       ),
@@ -345,7 +345,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
               ),
               onPressed: () {
-                showSuccessDialog(context);
+                // showSuccessDialog(context);
 
               },
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/main/home/detail_product_page.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 import '../../data/models/product_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';

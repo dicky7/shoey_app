@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/widget/product_tile_item.dart';
 import 'package:shoes_app/utils/helper_utils.dart';
 
-import '../../../../utils/styles.dart';
+import '../../../../utils/style/styles.dart';
 
 class FavoritePage extends StatelessWidget {
   static const routeName = "favorite-page";
@@ -26,7 +26,7 @@ class FavoritePage extends StatelessWidget {
         centerTitle: true,
         elevation: 3,
         title: Text(
-          "Shoes Wishlist",
+          "Shoey Wishlist",
           style: Theme.of(context).textTheme.headline6?.copyWith(color: kGreyColor),
         ),
     );

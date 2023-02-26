@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/main/chat/detail_chat_page.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class ChatTile extends StatelessWidget {
   const ChatTile({Key? key}) : super(key: key);

@@ -3,7 +3,7 @@ import 'package:shoes_app/presentation/pages/main/main_page.dart';
 
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
-import 'package:shoes_app/utils/styles.dart';
+import 'package:shoes_app/utils/style/styles.dart';
 
 class SignInPage extends StatelessWidget {
   static const routeName = "/sign-in";
@@ -95,7 +95,7 @@ class SignInPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       onPressed: () {
         if (_formKey.currentState!.validate()) {
-          Navigator.pushReplacementNamed(context, MainPage.routeName);
+          Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false);
         }
       },
     );

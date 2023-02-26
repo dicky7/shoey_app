@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/styles.dart';
+import '../../utils/style/styles.dart';
 
 
 class CustomButton extends StatelessWidget {
   final String title;
   final double width;
   final EdgeInsets margin;
+  final Color? color;
   final Function() onPressed;
 
   const CustomButton({
@@ -15,7 +16,7 @@ class CustomButton extends StatelessWidget {
     required this.title,
     this.width = double.infinity,
     this.margin = EdgeInsets.zero,
-    required this.onPressed,
+    required this.onPressed, this.color,
   }) : super(key: key);
 
   @override
@@ -26,7 +27,7 @@ class CustomButton extends StatelessWidget {
       height: 45,
       child: TextButton(
         style: TextButton.styleFrom(
-          backgroundColor: kBlackColor,
+          backgroundColor: color ?? kBlackColor,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15)),
         ),

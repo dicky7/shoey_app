@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
+import 'package:shoes_app/presentation/providers/auth_providers.dart';
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
+import 'package:shoes_app/utils/app_utils.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 
-import '../../../utils/styles.dart';
+import '../../../utils/style/styles.dart';
+import '../../providers/preferences_provider.dart';
 
 class SignUpPage extends StatelessWidget {
   static const routeName = "/sign-up";
@@ -95,24 +100,90 @@ class SignUpPage extends StatelessWidget {
               obscureText: true,
             ),
             const SizedBox(height: 30),
-            _signUpButton()
+            handleSignUp(context)
           ],
         ),
       ),
     );
   }
 
-  Widget _signUpButton(){
+  Widget buttonSignUp(BuildContext context){
     return CustomButton(
       title: "Sign Up",
       margin: const EdgeInsets.symmetric(horizontal: 16),
       onPressed: () {
-        if (_formKey.currentState!.validate()) {
-
+        if (_formKey.currentState?.validate() == false) {
+          // Invalid!
+          return;
         }
+        _formKey.currentState?.save();
+        Provider.of<AuthProviders>(context, listen: false).signUp(
+            name: fullNameTextEditingController.text,
+            username: usernameEditingController.text,
+            email: emailTextEditingController.text,
+            password: passwordTextEditingController.text
+        );
+        Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
       },
     );
   }
+
+  Widget handleSignUp(BuildContext context){
+    return Consumer<AuthProviders>(
+      builder: (context, state, _) {
+        if (state.state == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state.state == ResultState.Success) {
+          Future.microtask((){
+            showCustomDialog(
+              context: context,
+              title: "Hurray :)",
+              content: state.message,
+              buttonTitle: "Sign In",
+              icons: Icons.check,
+              onPressed: () => Navigator.pushNamed(context, SignInPage.routeName),
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+          });
+          return Container();
+        } else if(state.state == ResultState.Error){
+          Future.microtask((){
+            showCustomDialogError(
+              context: context,
+              title: "Error",
+              content: state.message,
+              icons: Icons.close,
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+          });
+          return Container();
+        }return CustomButton(
+          title: "Sign Up",
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          onPressed: () {
+            if (_formKey.currentState?.validate() == false) {
+              // Invalid!
+              return;
+            }
+            _formKey.currentState?.save();
+            Provider.of<AuthProviders>(context, listen: false).signUp(
+                name: fullNameTextEditingController.text,
+                username: usernameEditingController.text,
+                email: emailTextEditingController.text,
+                password: passwordTextEditingController.text
+            );
+            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+          },
+        );
+      },
+    );
+  }
+
+
 
   Widget footer(BuildContext context){
     return Row(

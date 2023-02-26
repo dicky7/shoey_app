@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/styles.dart';
+import '../../utils/style/styles.dart';
 
 class CustomTextForm extends StatelessWidget {
   final String title;
