@@ -24,6 +24,7 @@ class DioHelper {
       onRequest: ((options, handler) async {
         //Calls the "getAccessToken" method of the "AuthHelper" class to retrieve the access token needed for the request.
         final accessToken = await PreferencesHelper().getAccessToken();
+        print("dio accessToken"+ accessToken);
         options.headers = {
           'Content-Type': Headers.jsonContentType,
         };

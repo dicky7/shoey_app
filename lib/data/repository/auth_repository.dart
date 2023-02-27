@@ -27,8 +27,8 @@ class AuthRepositoryImpl extends AuthRepository{
 
       //If the remoteDataSource.signIn() call throws a ServerException, it catches the exception
       // and returns a Left instance wrapping a ServerFailure instance with an empty message.
-    }on ServerException{
-      return Left(ServerFailure(""));
+    }on ServerException catch(e){
+      return Left(ServerFailure(e.message.toString()));
     }catch (e){
       return Left(ServerFailure(e.toString()));
     }

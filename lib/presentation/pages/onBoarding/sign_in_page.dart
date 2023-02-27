@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/presentation/cubits/auth/auth_cubit.dart';
 import 'package:shoes_app/presentation/pages/main/main_page.dart';
+import 'package:shoes_app/presentation/providers/preferences_provider.dart';
 
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
 import 'package:shoes_app/utils/style/styles.dart';
+
+import '../../../utils/app_utils.dart';
 
 class SignInPage extends StatelessWidget {
   static const routeName = "/sign-in";
@@ -90,13 +96,45 @@ class SignInPage extends StatelessWidget {
   }
 
   Widget _signButton(BuildContext context){
-    return CustomButton(
-      title: "Sign in",
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false);
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          showCustomDialog(
+            context: context,
+            title: "Hurray :)",
+            content: "Sign In Success, Welcome to Shoey",
+            buttonTitle: "Lets go",
+            icons: Icons.check,
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false),
+          );
+
+        }else if(state is AuthError){
+          showCustomDialogError(
+            context: context,
+            title: "Error",
+            content: state.message,
+            icons: Icons.close,
+          );
         }
+      },
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return CustomButton(
+          title: "Sign in",
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              context.read<AuthCubit>().signIn(
+                  email: emailController.text,
+                  password: passwordController.text
+              );
+            }
+          },
+        );
       },
     );
   }

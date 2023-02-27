@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/main/profile/edit_profile_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/my_order_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_up_page.dart';
+import 'package:shoes_app/presentation/providers/auth_providers.dart';
+import 'package:shoes_app/presentation/providers/preferences_provider.dart';
 import 'package:shoes_app/presentation/widget/item_profile.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
@@ -65,7 +68,10 @@ class ProfilePage extends StatelessWidget {
               iconSize: 30,
               icon: Icon(Icons.login, color: kRedColor),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, SignInPage.routeName);
+                Provider.of<PreferencesProvider>(context, listen: false).removeAccessToken();
+                var accessToken = Provider.of<PreferencesProvider>(context, listen: false).isAccessToken;
+                print("remove Access"+accessToken);
+                Navigator.pushNamedAndRemoveUntil(context, SignInPage.routeName, (route) => false);
               },
             )
           ],

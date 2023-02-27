@@ -11,25 +11,32 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository authRepository;
   AuthCubit(this.authRepository) : super(AuthInitial());
 
-  Future<dynamic> signUp({
+  void signIn({
+    required  String email,
+    required  String password,
+  }) async {
+    emit(AuthLoading());
+    final result = await authRepository.signIn(email, password);
+    result.fold(
+          (error) => emit(AuthError(error.message)),
+          (success) async {
+            emit(AuthSuccess(success));
+          },
+    );
+  }
+
+  void signUp({
     required String name,
     required  String email,
     required String username,
     required  String password,
   }) async {
-    try{
-      final result = await authRepository.signUp(name, email, username, password);
-      result.fold(
-            (error){
-        },
-            (success) async{
-
-          await PreferencesHelper().setAccessToken(success.accessToken);
-        },
-      );
-
-    }catch (e){
-      
-    }
+    emit(AuthLoading());
+    final result = await authRepository.signUp(name, email, username, password);
+    result.fold(
+          (error) => emit(AuthError(error.message)),
+          (success) => emit(AuthSuccess(success)),
+    );
   }
+
 }

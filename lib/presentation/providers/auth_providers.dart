@@ -75,8 +75,6 @@ class AuthProviders extends ChangeNotifier {
         (success) async{
           _state = ResultState.Success;
           notifyListeners();
-          await PreferencesHelper().setAccessToken(success.accessToken);
-          print(success.accessToken);
           return _message = "Sign Up Success, Please Login First";
         },
       );

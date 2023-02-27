@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/presentation/pages/main/main_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/get_started_page.dart';
 import 'package:shoes_app/utils/style/styles.dart';
+
+import '../../providers/preferences_provider.dart';
 
 class SplashPage extends StatefulWidget {
   static const routeName = "/splash";
@@ -16,8 +20,15 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, GetStartedPage.routeName);
+    Future.delayed(const Duration(seconds: 5),() {
+      var accessToken = Provider.of<PreferencesProvider>(context, listen: false).isAccessToken;
+      print("Access"+accessToken);
+      if (accessToken.isNotEmpty) {
+        Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false);
+
+      }else{
+        Navigator.pushReplacementNamed(context, GetStartedPage.routeName);
+      }
     });
   }
   @override
