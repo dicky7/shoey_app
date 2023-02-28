@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     final hour = DateTime.now().hour;
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
-        if (state is HomeLoading) {
+        if (state is UserLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
             child: CircularProgressIndicator(),
           );
         }
-        else if (state is HomeCategoriesLoaded) {
+        else if (state is HomePageLoaded) {
           return Container(
             margin: const EdgeInsets.only(left: 24),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -190,9 +190,9 @@ class _HomePageState extends State<HomePage> {
                   shrinkWrap: true,
                   primary: false,
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.categories.length,
+                  itemCount: state.categories?.length,
                   itemBuilder: (context, index) {
-                    final category = state.categories[index];
+                    final category = state.categories![index];
                     print("category home $category");
                     return _chipCategory(context, category);
                   },
