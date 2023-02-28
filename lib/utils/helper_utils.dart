@@ -2,6 +2,9 @@
 
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
+import 'package:shoes_app/data/models/catagory_model.dart';
+
 import '../data/models/product_model.dart';
 
 const List<Color> colors = [
@@ -34,7 +37,7 @@ List<ProductModel> productList = [
       description: "A pillar of sneaker culture, the Nike Air Max 90 remains one of the most significant designs since the brand’s founding. And while its OG colorways are some of the most significant.",
       tags: "popular",
       categoriesId: 1,
-      category: Category(id: 1, name: 'Sneakers'),
+      category: CategoryModel(id: 1, name: 'Sneakers'),
       galleries: []
   ),
   ProductModel(
@@ -44,7 +47,7 @@ List<ProductModel> productList = [
     description: "A pillar of sneaker culture, the Nike Air Max 90 remains one of the most significant designs since the brand’s founding. And while its OG colorways are some of the most significant.",
     tags: "popular",
     categoriesId: 1,
-    category: Category(id: 1, name: ''),
+    category: CategoryModel(id: 1, name: ''),
     galleries: []
   ),
   ProductModel(
@@ -54,7 +57,7 @@ List<ProductModel> productList = [
     description: "A pillar of sneaker culture, the Nike Air Max 90 remains one of the most significant designs since the brand’s founding. And while its OG colorways are some of the most significant.",
     tags: "popular",
     categoriesId: 1,
-    category: Category(id: 1, name: ''),
+    category: CategoryModel(id: 1, name: ''),
     galleries: []
   ),
   ProductModel(
@@ -64,7 +67,7 @@ List<ProductModel> productList = [
     description: "A pillar of sneaker culture, the Nike Air Max 90 remains one of the most significant designs since the brand’s founding. And while its OG colorways are some of the most significant.",
     tags: "popular",
     categoriesId: 1,
-    category: Category(id: 1, name: ''),
+    category: CategoryModel(id: 1, name: ''),
     galleries: []
   ),
   ProductModel(
@@ -74,7 +77,7 @@ List<ProductModel> productList = [
     description: "A pillar of sneaker culture, the Nike Air Max 90 remains one of the most significant designs since the brand’s founding. And while its OG colorways are some of the most significant.",
     tags: "popular",
     categoriesId: 1,
-    category: Category(id: 1, name: ''),
+    category: CategoryModel(id: 1, name: ''),
     galleries: []
 ),
 ];

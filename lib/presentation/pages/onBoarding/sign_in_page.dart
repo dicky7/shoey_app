@@ -46,8 +46,6 @@ class SignInPage extends StatelessWidget {
                 _inputSection(context),
                 const SizedBox(height: 40),
                 footer(context)
-
-
               ],
             ),
           ),
@@ -99,6 +97,7 @@ class SignInPage extends StatelessWidget {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
+          Provider.of<PreferencesProvider>(context, listen : false).setAccessToken(state.authModel.accessToken);
           showCustomDialog(
             context: context,
             title: "Hurray :)",

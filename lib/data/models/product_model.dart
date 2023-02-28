@@ -1,3 +1,5 @@
+import 'package:shoes_app/data/models/catagory_model.dart';
+
 class ProductDataModel {
   ProductDataModel({
     required this.currentPage,
@@ -36,8 +38,8 @@ class ProductModel {
   final String description;
   final dynamic tags;
   final int categoriesId;
-  final Category category;
-  final List<Gallery> galleries;
+  final CategoryModel category;
+  final List<GalleryModel> galleries;
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
     id: json["id"],
@@ -46,8 +48,8 @@ class ProductModel {
     description: json["description"],
     tags: json["tags"],
     categoriesId: json["categories_id"],
-    category: Category.fromJson(json["category"]),
-    galleries: List<Gallery>.from(json["galleries"].map((x) => Gallery.fromJson(x))),
+    category: CategoryModel.fromJson(json["category"]),
+    galleries: List<GalleryModel>.from(json["galleries"].map((x) => GalleryModel.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -62,28 +64,8 @@ class ProductModel {
   };
 }
 
-class Category {
-  Category({
-    required this.id,
-    required this.name,
-  });
-
-  final int id;
-  final String name;
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-    id: json["id"],
-    name: json["name"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-  };
-}
-
-class Gallery {
-  Gallery({
+class GalleryModel {
+  GalleryModel({
     required this.id,
     required this.productsId,
     required this.url,
@@ -93,7 +75,7 @@ class Gallery {
   final int productsId;
   final String url;
 
-  factory Gallery.fromJson(Map<String, dynamic> json) => Gallery(
+  factory GalleryModel.fromJson(Map<String, dynamic> json) => GalleryModel(
     id: json["id"],
     productsId: json["products_id"],
     url: json["url"],

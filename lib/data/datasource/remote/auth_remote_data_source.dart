@@ -30,11 +30,12 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource{
       final response = await dio.post("/login", data: body);
       // If the status code is 200, the response data is converted to a BaseResponse object,
       // and its data property is then converted to an AuthModel object.
+      final baseResponse = BaseResponse.fromJson(response.data);
       if (response.statusCode == 200) {
-        final baseResponse = BaseResponse.fromJson(response.data);
+        // final baseResponse = BaseResponse.fromJson(response.data);
         return AuthModel.fromJson(baseResponse.data);
       } else {
-        throw ServerException(response.statusMessage.toString());
+        throw ServerException(baseResponse.meta.message);
       }
     }on DioError catch(error){
       throw ServerException(DioErrorHelper.getErrorMessage(error));
@@ -55,11 +56,13 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource{
 
     try{
       final response = await dio.post("/register", data: body);
+      //\\
+      final baseResponse = BaseResponse.fromJson(response.data);
       if (response.statusCode == 200) {
-        final baseResponse = BaseResponse.fromJson(response.data);
+        // final baseResponse = BaseResponse.fromJson(response.data);
         return AuthModel.fromJson(baseResponse.data);
       }else{
-        throw ServerException(response.statusMessage.toString());
+        throw ServerException(baseResponse.meta.message);
       }
     }on DioError catch(error){
       throw ServerException(DioErrorHelper.getErrorMessage(error));

@@ -4,8 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoes_app/data/datasource/preferences/preferences_helper.dart';
 import 'package:shoes_app/data/datasource/remote/auth_remote_data_source.dart';
+import 'package:shoes_app/data/datasource/remote/product_remote_data_source.dart';
+import 'package:shoes_app/data/datasource/remote/user_remote_data_source.dart';
 import 'package:shoes_app/data/repository/auth_repository.dart';
+import 'package:shoes_app/data/repository/product_repository.dart';
+import 'package:shoes_app/data/repository/user_repository.dart';
 import 'package:shoes_app/presentation/cubits/auth/auth_cubit.dart';
+import 'package:shoes_app/presentation/cubits/home/home_cubit.dart';
+import 'package:shoes_app/presentation/cubits/user/user_cubit.dart';
 import 'package:shoes_app/presentation/pages/main/cart/cart_page.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_success_page.dart';
@@ -38,15 +44,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
+        RepositoryProvider<AuthRepository>(
             create: (_) => AuthRepositoryImpl(AuthRemoteDataSourceImpl(DioHelper().getDioClient())),
-          )
+          ),
+        RepositoryProvider<ProductRepository>(
+          create: (_) => ProductRepositoryImpl(ProductRemoteDataSourceImpl(DioHelper().getDioClient())),
+        ),
+        RepositoryProvider<UserRepository>(
+          create: (_) => UserRepositoryImpl(UserRemoteDataSourceImpl(DioHelper().getDioClient())),
+        )
       ],
       child: MultiBlocProvider(
         providers: [
           ChangeNotifierProvider<PreferencesProvider>(
-            //The lazy parameter of the BlocProvider constructor is a boolean value that indicates
-            // whether the provider should create and initialize the Bloc instance lazily or eagerly.
             lazy: false,
             create: (context) => PreferencesProvider(
                 PreferencesHelper()
@@ -54,7 +64,20 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => AuthCubit(
-              context.read<AuthRepositoryImpl>()
+              context.read<AuthRepository>()
+            ),
+          ),
+          BlocProvider(
+            //The lazy parameter of the BlocProvider constructor is a boolean value that indicates
+            // whether the provider should create and initialize the Bloc instance lazily or eagerly.
+            lazy: false,
+            create: (context) => HomeCubit(
+              context.read<ProductRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => UserCubit(
+              context.read<UserRepository>(),
             ),
           )
 
