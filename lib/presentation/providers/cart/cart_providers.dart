@@ -55,18 +55,30 @@ class CartProviders extends ChangeNotifier{
     );
   }
 
+
+
   Future<void> decreaseCartItem(CartTable cart) async {
+    //The method first checks if the quantity of the provided cart object is already 1. If it is,
+    // it removes the item from the cart by calling the removeCartItem method.
     if (cart.quantity == 1) {
       await removeCartItem(cart.id);
     } else {
+     // If the quantity is greater than 1, it creates a new CartTable object with the updated quantity by
+      // calling the setUpdateCart method and passing the updated quantity as an argument.
       final updateCart = cart.setUpdateCart(cart.quantity - 1);
+
+      //After that, the code calls the updateCart method on the cartRepository object with the updated CartTable object.
       final result = await cartRepository.updateCart(updateCart);
       result.fold(
         (error) => _message = error.message,
         (updated) {
+          // If the update is successful, the code updates the local _cartList variable to reflect the updated
+          // CartTable object
           _cartList = cartList.map((item) => item.id == cart.id
               ? cart.setUpdateCart(updateCart.quantity)
               : item).toList();
+
+          //then calls the notifyListeners method to notify any listeners of this change.
           notifyListeners();
         },
       );
@@ -74,14 +86,21 @@ class CartProviders extends ChangeNotifier{
   }
 
   Future<void> increaseCartItem(CartTable cartTable) async {
+    //The method first creates a new CartTable object with the updated quantity by calling the setUpdateCart
+    // method and passing the updated quantity as an argument.
     final updateCart = cartTable.setUpdateCart(cartTable.quantity + 1);
+
+    //After that, the code calls the updateCart method on the cartRepository object with the updated CartTable object.
     final result = await cartRepository.updateCart(updateCart);
     result.fold(
        (error) => _message = error.message,
        (updated) {
+         //If the update is successful, the code updates the local _cartList variable to reflect the updated CartTable object
          _cartList = _cartList.map((item) => item.id == cartTable.id
             ? cartTable.setUpdateCart(updateCart.quantity)
             : item).toList();
+
+         // then calls the notifyListeners method to notify any listeners of this change.
          notifyListeners();
       },
     );
