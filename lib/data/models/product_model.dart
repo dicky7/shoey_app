@@ -1,3 +1,5 @@
+import 'category_model.dart';
+
 class ProductDataModel {
   ProductDataModel({
     required this.currentPage,
@@ -12,10 +14,6 @@ class ProductDataModel {
     data: List<ProductModel>.from(json["data"].map((x) => ProductModel.fromJson(x))),
   );
 
-  Map<String, dynamic> toJson() => {
-    "current_page": currentPage,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-  };
 }
 
 class ProductModel {
@@ -32,11 +30,11 @@ class ProductModel {
 
   final int id;
   final String name;
-  final double price;
+  final int price;
   final String description;
   final dynamic tags;
-  final int categoriesId;
-  final Category category;
+  final num categoriesId;
+  final CategoryModel category;
   final List<Gallery> galleries;
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -46,40 +44,18 @@ class ProductModel {
     description: json["description"],
     tags: json["tags"],
     categoriesId: json["categories_id"],
-    category: Category.fromJson(json["category"]),
+    category: CategoryModel.fromJson(json["category"]),
     galleries: List<Gallery>.from(json["galleries"].map((x) => Gallery.fromJson(x))),
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "price": price,
-    "description": description,
-    "tags": tags,
-    "categories_id": categoriesId,
-    "category": category.toJson(),
-    "galleries": List<dynamic>.from(galleries.map((x) => x.toJson())),
-  };
-}
-
-class Category {
-  Category({
-    required this.id,
-    required this.name,
-  });
-
-  final int id;
-  final String name;
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-    id: json["id"],
-    name: json["name"],
-  );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
+    "price": price
   };
+
+
 }
 
 class Gallery {
@@ -89,8 +65,8 @@ class Gallery {
     required this.url,
   });
 
-  final int id;
-  final int productsId;
+  final num id;
+  final num productsId;
   final String url;
 
   factory Gallery.fromJson(Map<String, dynamic> json) => Gallery(
@@ -99,9 +75,5 @@ class Gallery {
     url: json["url"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "products_id": productsId,
-    "url": url,
-  };
+
 }

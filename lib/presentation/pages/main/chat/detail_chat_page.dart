@@ -35,7 +35,7 @@ class DetailChatPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                "assets/image_shop_logo_online.png",
+                "assets/icon_logo.png",
                 height: 50,
                 width: 50,
               ),
@@ -45,7 +45,7 @@ class DetailChatPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Shoe Store",
+                  "Shoey Store",
                   style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kBlackColor),
                 ),
                 Text(

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
-import 'package:shoes_app/presentation/providers/auth_providers.dart';
+import 'package:shoes_app/presentation/providers/auth/auth_providers.dart';
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
 import 'package:shoes_app/utils/app_utils.dart';
 import 'package:shoes_app/utils/state_enum.dart';
 
 import '../../../utils/style/styles.dart';
-import '../../providers/preferences_provider.dart';
+import '../../providers/preferences/preferences_provider.dart';
 
 class SignUpPage extends StatelessWidget {
   static const routeName = "/sign-up";
@@ -107,26 +107,6 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  Widget buttonSignUp(BuildContext context){
-    return CustomButton(
-      title: "Sign Up",
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      onPressed: () {
-        if (_formKey.currentState?.validate() == false) {
-          // Invalid!
-          return;
-        }
-        _formKey.currentState?.save();
-        Provider.of<AuthProviders>(context, listen: false).signUp(
-            name: fullNameTextEditingController.text,
-            username: usernameEditingController.text,
-            email: emailTextEditingController.text,
-            password: passwordTextEditingController.text
-        );
-        Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
-      },
-    );
-  }
 
   Widget handleSignUp(BuildContext context){
     return Consumer<AuthProviders>(
@@ -165,18 +145,15 @@ class SignUpPage extends StatelessWidget {
           title: "Sign Up",
           margin: const EdgeInsets.symmetric(horizontal: 16),
           onPressed: () {
-            if (_formKey.currentState?.validate() == false) {
-              // Invalid!
-              return;
+            if (_formKey.currentState!.validate()) {
+              Provider.of<AuthProviders>(context, listen: false).signUp(
+                  name: fullNameTextEditingController.text,
+                  username: usernameEditingController.text,
+                  email: emailTextEditingController.text,
+                  password: passwordTextEditingController.text
+              );
+              Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
             }
-            _formKey.currentState?.save();
-            Provider.of<AuthProviders>(context, listen: false).signUp(
-                name: fullNameTextEditingController.text,
-                username: usernameEditingController.text,
-                email: emailTextEditingController.text,
-                password: passwordTextEditingController.text
-            );
-            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
           },
         );
       },

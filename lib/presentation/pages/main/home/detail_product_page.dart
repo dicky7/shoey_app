@@ -1,13 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/presentation/pages/main/cart/cart_page.dart';
+import 'package:shoes_app/presentation/pages/main/main_page.dart';
+import 'package:shoes_app/presentation/providers/home/detail_product_providers.dart';
 import 'package:shoes_app/utils/app_utils.dart';
+import 'package:shoes_app/utils/constant.dart';
 import 'package:shoes_app/utils/helper_utils.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import '../../../../data/models/product_model.dart';
+
 class DetailProductPage extends StatefulWidget {
   static const routeName = "detail-product";
-  const DetailProductPage({Key? key}) : super(key: key);
+
+  final int id;
+  const DetailProductPage({Key? key, required this.id}) : super(key: key);
 
   @override
   State<DetailProductPage> createState() => _DetailProductPageState();
@@ -15,30 +26,73 @@ class DetailProductPage extends StatefulWidget {
 
 class _DetailProductPageState extends State<DetailProductPage> {
   int currentIndexIndicator = 0; // this index for indicator for image
-  final product = productList[0];
   int colorSelectedIndex = 0;
   int? valueDropdown;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<DetailProductProviders>(context,listen: false)
+        ..getProductById(widget.id)
+        ..productWishlistStatus(widget.id);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kBackgroundColor2,
-        bottomNavigationBar: buildButton(),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildHeader(context),
-              buildContent(context)
-            ],
-          ),
+        body: Consumer<DetailProductProviders>(
+          builder: (context, providers, child) {
+            final state = providers.state;
+            if (state == ResultState.Loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }else if(state == ResultState.Success){
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildHeader(context, providers.product.galleries),
+                    buildContent(context, providers.product, providers.isAddedToWishlist)
+                  ],
+                ),
+              );
+            }else if(state == ResultState.Error){
+              return  Center(
+                child: Text(providers.message),
+              );
+            }else{
+              return Container();
+            }
+          },
+        ),
+        bottomNavigationBar: Consumer<DetailProductProviders>(
+          builder: (context, providers, child) {
+            final state = providers.state;
+            if (state == ResultState.Loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }else if(state == ResultState.Success){
+              return buildButton(providers.product);
+            }else if(state == ResultState.Error){
+              return  Center(
+                child: Text(providers.message),
+              );
+            }else{
+              return Container();
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget buildHeader(BuildContext context){
+  Widget buildHeader(BuildContext context, List<Gallery> images){
     int index = -1;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +108,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
               Icons.arrow_back_ios_new,
               color: kBlackColor,
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pushReplacementNamed(context, MainPage.routeName),
           ),
         ),
         CarouselSlider(
@@ -69,7 +123,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             },
           ),
           items: images.map((image) => CachedNetworkImage(
-            imageUrl: image,
+            imageUrl: image.url,
             placeholder: (context, url) => const CircularProgressIndicator(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             width: double.infinity,
@@ -100,7 +154,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
     );
   }
 
-  Widget buildContent(BuildContext context){
+  Widget buildContent(BuildContext context, ProductModel product, bool isAddedWatchlist){
     return Container(
       margin: const EdgeInsets.only(top: 20),
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
@@ -113,18 +167,18 @@ class _DetailProductPageState extends State<DetailProductPage> {
       ),
       child: Column(
           children: [
-            buildNameProduct(context),
+            buildNameProduct(context, product, isAddedWatchlist),
             const SizedBox(height: 10),
             Divider(color: kGreyColor.withOpacity(0.5), thickness: 1),
             const SizedBox(height: 15),
-            buildProductDesc(context),
+            buildProductDesc(context, product),
             const SizedBox(height: 35),
           ]
       ),
     );
   }
 
-  Widget buildNameProduct(BuildContext context) {
+  Widget buildNameProduct(BuildContext context, ProductModel product, bool isAddedWatchlist) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,7 +192,11 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "\$ 50.0",
+                    NumberFormat.currency(
+                      locale:"en_US",
+                      symbol: "\$",
+                      decimalDigits: 0,
+                    ).format(product.price),
                     style: Theme.of(context).textTheme.headline5?.copyWith(color: kRedColor),
                   ),
                   const SizedBox(height: 3),
@@ -151,11 +209,25 @@ class _DetailProductPageState extends State<DetailProductPage> {
             ),
             IconButton(
               iconSize: 35,
-              icon: const Icon(Icons.favorite),
-              onPressed: () {
-                showSuccessSnackbar(context, "Success");
+              icon:  isAddedWatchlist
+              //initial value isAddedWatchlist is false, because we set if false in detailProviders
+                  ? const Icon(Icons.favorite)
+                  : const Icon(Icons.favorite_border),
+              onPressed: () async{
+                //when condition is not equal with isAddedWatchlist and user press the button, product will add to wishlist
+                if (isAddedWatchlist == false) {
+                  await Provider.of<DetailProductProviders>(context, listen: false).addToWishlist(product);
+                }else{
+                  await Provider.of<DetailProductProviders>(context, listen: false).removeFromWishlist(product.id);
+                }
 
-
+                //get wishlistMessage when wishlist response is success
+                final message = Provider.of<DetailProductProviders>(context, listen: false).wishlistMessage;
+                if (message == wishlistAddSuccessMessage || message == wishlistRemoveSuccessMessage) {
+                  showSuccessSnackbar(context, message);
+                }else{
+                  showErrorSnackbar(context, message);
+                }
               },
             )
           ],
@@ -190,7 +262,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
     );
   }
 
-  Widget buildProductDesc(BuildContext context) {
+  Widget buildProductDesc(BuildContext context, ProductModel product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -303,7 +375,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
     );
   }
 
-  Widget buildButton(){
+  Widget buildButton(ProductModel product){
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
@@ -344,9 +416,25 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 "Add To Cart",
                 style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
               ),
-              onPressed: () {
-                // showSuccessDialog(context);
+              onPressed: () async{
+                await Provider.of<DetailProductProviders>(context,listen: false).addToCart(product);
 
+                //to fix warning DON'T use BuildContext across asynchronous gaps.
+                if (context.mounted) return;
+
+                final messageCart = Provider.of<DetailProductProviders>(context,listen: false).cartMessage;
+                if (messageCart == cartAddSuccessMessage) {
+                  showCustomDialog(
+                    context: context,
+                    icons: Icons.check_circle_outline,
+                    title: "Success",
+                    content: messageCart,
+                    buttonTitle: "View My Cart",
+                    onPressed: () => Navigator.pushNamed(context, CartPage.routeName),
+                  );
+                }else{
+                  showErrorSnackbar(context, messageCart);
+                }
               },
             ),
           )

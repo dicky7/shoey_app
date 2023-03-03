@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/presentation/pages/main/main_page.dart';
+import 'package:shoes_app/presentation/pages/main/profile/profile_page.dart';
+import 'package:shoes_app/presentation/providers/profile/profile_providers.dart';
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
+
+import '../../../../utils/app_utils.dart';
 
 class EditProfilePage extends StatelessWidget {
   static const routeName = "edit-profile";
@@ -11,8 +18,6 @@ class EditProfilePage extends StatelessWidget {
   final TextEditingController nameEditingController = TextEditingController(text: "");
   final TextEditingController emailEditingController = TextEditingController(text: "");
   final _formKey = GlobalKey<FormState>();
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +65,7 @@ class EditProfilePage extends StatelessWidget {
             title: "Email",
             hintText: "Your New Email",
             errorText: "Please Input Your Email",
-            textEditingController: usernameEditingController,
+            textEditingController: emailEditingController,
           ),
           const SizedBox(height: 50),
           updateButton()
@@ -70,12 +75,53 @@ class EditProfilePage extends StatelessWidget {
   }
 
   Widget updateButton(){
-    return CustomButton(
-      title: "Update",
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
+    return Consumer<ProfileProviders>(
+      builder: (context, value, child) {
+        final state = value.stateUpdateUser;
+        if (state == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if(state == ResultState.Success){
+          Future.microtask((){
+            showCustomDialog(
+              context: context,
+              title: "Hurray :)",
+              content: value.messageUpdateUser,
+              buttonTitle: "Lets Go",
+              icons: Icons.check,
+              onPressed: () => Navigator.pushNamed(context, MainPage.routeName),
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<ProfileProviders>(context, listen: false).setPostState(ResultState.Initial);
 
-        }
+          });
+        } else if(state == ResultState.Error){
+          Future.microtask((){
+            showCustomDialogError(
+              context: context,
+              title: "Error",
+              content: value.messageUpdateUser,
+              icons: Icons.close,
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<ProfileProviders>(context, listen: false).setPostState(ResultState.Initial);
+          });
+          return Container();
+        }return CustomButton(
+          title: "Sign Up",
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Provider.of<ProfileProviders>(context, listen: false).updateUserProfile(
+                  fullname: nameEditingController.text,
+                  email: emailEditingController.text,
+                  username: usernameEditingController.text,
+              );
+              Provider.of<ProfileProviders>(context, listen: false).setPostState(ResultState.Initial);
+            }
+          },
+        );
       },
     );
   }

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/main/main_page.dart';
+import 'package:shoes_app/presentation/providers/preferences/preferences_provider.dart';
 
 import 'package:shoes_app/presentation/widget/custom_button.dart';
 import 'package:shoes_app/presentation/widget/custom_text_form.dart';
 import 'package:shoes_app/utils/style/styles.dart';
+
+import '../../../utils/app_utils.dart';
+import '../../../utils/state_enum.dart';
+import '../../providers/auth/auth_providers.dart';
 
 class SignInPage extends StatelessWidget {
   static const routeName = "/sign-in";
@@ -82,21 +88,61 @@ class SignInPage extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            _signButton(context)
+            handleSignIn(context)
           ],
         ),
       ),
     );
   }
 
-  Widget _signButton(BuildContext context){
-    return CustomButton(
-      title: "Sign in",
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false);
-        }
+  Widget handleSignIn(BuildContext context){
+    return Consumer<AuthProviders>(
+      builder: (context, state, _) {
+        if (state.state == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state.state == ResultState.Success) {
+          //save token to shared preferences
+          Provider.of<PreferencesProvider>(context).setAccessToken(state.authModel.accessToken);
+          Future.microtask((){
+            showCustomDialog(
+              context: context,
+              title: "Hurray :)",
+              content: state.message,
+              buttonTitle: "Lets Go",
+              icons: Icons.check,
+              onPressed: () => Navigator.pushNamed(context, MainPage.routeName),
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+          });
+          return Container();
+        } else if(state.state == ResultState.Error){
+          Future.microtask((){
+            showCustomDialogError(
+              context: context,
+              title: "Error",
+              content: state.message,
+              icons: Icons.close,
+            );
+            //set state to initial becasue if not the custom dialog will alwasys appear
+            Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+          });
+          return Container();
+        }return CustomButton(
+          title: "Sign Up",
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Provider.of<AuthProviders>(context, listen: false).signIn(
+                  email: emailController.text,
+                  password: passwordController.text
+              );
+              Provider.of<AuthProviders>(context, listen: false).setPostState(ResultState.Initial);
+            }
+          },
+        );
       },
     );
   }

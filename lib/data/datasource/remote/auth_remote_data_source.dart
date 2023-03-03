@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:shoes_app/data/models/BaseResponse.dart';
+import 'package:shoes_app/data/models/base_response.dart';
 import 'package:shoes_app/utils/exception.dart';
 import 'package:shoes_app/utils/helpers/dio_error_helper.dart';
 import 'package:http/http.dart' as http;

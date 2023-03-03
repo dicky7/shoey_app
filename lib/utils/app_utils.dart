@@ -60,6 +60,7 @@ Future<void> showCustomDialog(
               const SizedBox(height: 12),
               Text(
                 content,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
               ),
               const SizedBox(height: 20),
@@ -117,6 +118,7 @@ Future<void> showCustomDialogError({
               const SizedBox(height: 12),
               Text(
                 content,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
               ),
               const SizedBox(height: 20),

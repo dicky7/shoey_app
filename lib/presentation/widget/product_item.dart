@@ -13,7 +13,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, DetailProductPage.routeName);
+        Navigator.pushNamed(context, DetailProductPage.routeName, arguments: product.id);
       },
       child: Column(
         children: [
@@ -23,30 +23,15 @@ class ProductItem extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(34)
               ),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: "https://shamo-backend.buildwithangga.id/storage/gallery/sW4VtliQPYnwvlbpxL5x6ZhKvbgBWT84OoiDyRsE.png",
-                      placeholder: (context, url) => const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                    ),
-                  ),
-                  Positioned(
-                    right: 5,
-                    top: 5,
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite, ),
-                      iconSize: 30,
-                      onPressed: () {
-
-                      },
-                    ),
-                  ),
-                ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: CachedNetworkImage(
+                  imageUrl: product.galleries[1].url,
+                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                ),
               ),
             ),
           ),

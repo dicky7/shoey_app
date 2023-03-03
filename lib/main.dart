@@ -7,24 +7,32 @@ import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_success_page.dart';
 import 'package:shoes_app/presentation/pages/main/chat/detail_chat_page.dart';
 import 'package:shoes_app/presentation/pages/main/chat/chat_page.dart';
-import 'package:shoes_app/presentation/pages/main/favorite/favorite_page.dart';
 import 'package:shoes_app/presentation/pages/main/home/detail_product_page.dart';
 import 'package:shoes_app/presentation/pages/main/home/home_page.dart';
 import 'package:shoes_app/presentation/pages/main/main_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/edit_profile_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/my_order_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/profile_page.dart';
+import 'package:shoes_app/presentation/pages/main/wishlist/wishlist_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/get_started_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_up_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/splash_page.dart';
-import 'package:shoes_app/presentation/providers/auth_providers.dart';
-import 'package:shoes_app/presentation/providers/preferences_provider.dart';
+import 'package:shoes_app/presentation/providers/auth/auth_providers.dart';
+import 'package:shoes_app/presentation/providers/cart/cart_providers.dart';
+import 'package:shoes_app/presentation/providers/home/detail_product_providers.dart';
+import 'package:shoes_app/presentation/providers/home/home_providers.dart';
+import 'package:shoes_app/presentation/providers/preferences/preferences_provider.dart';
+import 'package:shoes_app/presentation/providers/profile/profile_providers.dart';
+import 'package:shoes_app/presentation/providers/wishlist/wishlist_providers.dart';
+import 'package:shoes_app/utils/constant.dart';
 import 'package:shoes_app/utils/helpers/dio_helper.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 import 'package:provider/provider.dart';
+import 'injection.dart' as di;
 
 void main() {
+  di.init();
   runApp(const MyApp());
 }
 
@@ -37,21 +45,36 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => PreferencesProvider(
-            preferencesHelper: PreferencesHelper()
-          ),
+          lazy: false,
+          create: (context) => di.locator<PreferencesProvider>()
         ),
         ChangeNotifierProvider(
-          create: (context) => AuthProviders(
-            authRepository: AuthRepositoryImpl(AuthRemoteDataSourceImpl(DioHelper().getDioClient()))
-          ),
-        )
+          create: (context) => di.locator<AuthProviders>()
+        ),
+        ChangeNotifierProvider(
+            create: (context) => di.locator<HomeProviders>()
+        ),
+        ChangeNotifierProvider(
+            create: (context) => di.locator<DetailProductProviders>()
+        ),
+        ChangeNotifierProvider(
+          create: (context) => di.locator<CartProviders>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => di.locator<WishlistProviders>(),
+        ),
+
+        ChangeNotifierProvider(
+            create: (context) => di.locator<ProfileProviders>()
+        ),
+
       ],
       child: MaterialApp(
         theme: ThemeData(
           textTheme: myTextTheme,
         ),
         debugShowCheckedModeBanner: false,
+        navigatorObservers: <NavigatorObserver>[routeObserver],
         onGenerateRoute: (settings) {
           switch(settings.name){
             case SplashPage.routeName:
@@ -67,7 +90,10 @@ class MyApp extends StatelessWidget {
             case HomePage.routeName:
               return MaterialPageRoute(builder: (_) => const HomePage());
             case DetailProductPage.routeName:
-              return MaterialPageRoute(builder: (_) => const DetailProductPage());
+              final id = settings.arguments as int;
+              return MaterialPageRoute(builder: (_) => DetailProductPage(
+                id: id,
+              ));
             case ChatPage.routeName:
               return MaterialPageRoute(builder: (_) => const ChatPage());
             case DetailChatPage.routeName:
@@ -78,8 +104,8 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => const CheckoutPage());
             case CheckoutSuccessPage.routeName:
               return MaterialPageRoute(builder: (_) => const CheckoutSuccessPage());
-            case FavoritePage.routeName:
-              return MaterialPageRoute(builder: (_) => const FavoritePage());
+            case WishlistPage.routeName:
+              return MaterialPageRoute(builder: (_) => const WishlistPage());
             case ProfilePage.routeName:
               return MaterialPageRoute(builder: (_) => const ProfilePage());
             case EditProfilePage.routeName:

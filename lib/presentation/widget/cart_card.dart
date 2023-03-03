@@ -1,10 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/data/models/product_model.dart';
+import 'package:shoes_app/presentation/providers/cart/cart_providers.dart';
+import 'package:shoes_app/utils/app_utils.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
+import '../../data/models/table/cart_table.dart';
+
 class CartCard extends StatelessWidget {
-  const CartCard({Key? key}) : super(key: key);
+  final CartTable cartProduct;
+  const CartCard({Key? key, required this.cartProduct}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class CartCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: CachedNetworkImage(
-              imageUrl: "https://shamo-backend.buildwithangga.id/storage/gallery/sW4VtliQPYnwvlbpxL5x6ZhKvbgBWT84OoiDyRsE.png",
+              imageUrl: cartProduct.photo,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, url, error) => const Icon(Icons.error),
               width: 110,
@@ -41,7 +48,7 @@ class CartCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        "Terrex Urban Lows ",
+                        cartProduct.name,
                         style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 20),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -50,8 +57,11 @@ class CartCard extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.delete_outlined, color: kBlackColor),
                       iconSize: 30,
-                      onPressed: () {
+                      onPressed: () async{
+                        await Provider.of<CartProviders>(context, listen: false).removeCartItem(cartProduct.id);
 
+                        final message = Provider.of<CartProviders>(context, listen: false).removeMessage;
+                        showSuccessSnackbar(context, message);
                       },
                     )
                   ],
@@ -80,7 +90,11 @@ class CartCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "\$100s5.0",
+                      NumberFormat.currency(
+                        locale: "en_US",
+                        symbol: "\$ ",
+                        decimalDigits: 0
+                      ).format(cartProduct.price),
                       style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
                     ),
                     const SizedBox(width: 5),
@@ -95,25 +109,30 @@ class CartCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+
+                          //decrease button
                           Center(
                             child: IconButton(
                               icon: Icon(Icons.remove, color: kBlackColor),
                               iconSize: 15,
-                              onPressed:() {
+                              onPressed:() async{
+                                await Provider.of<CartProviders>(context, listen: false).decreaseCartItem(cartProduct);
 
                               },
                             ),
                           ),
                           Text(
-                            "10",
+                            cartProduct.quantity.toString(),
                             style: Theme.of(context).textTheme.subtitle2?.copyWith(fontWeight: FontWeight.bold),
                           ),
 
+                          //increase button
                           Center(
                             child: IconButton(
                               icon: Icon(Icons.add, color: kBlackColor),
                               iconSize: 15,
-                              onPressed: () {
+                              onPressed: () async{
+                                await Provider.of<CartProviders>(context, listen: false).increaseCartItem(cartProduct);
 
                               },
                             ),

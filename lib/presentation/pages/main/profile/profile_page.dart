@@ -1,15 +1,34 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/main/profile/edit_profile_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/my_order_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_in_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/sign_up_page.dart';
+import 'package:shoes_app/presentation/providers/profile/profile_providers.dart';
 import 'package:shoes_app/presentation/widget/item_profile.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
-class ProfilePage extends StatelessWidget {
+import '../../../../utils/state_enum.dart';
+import '../../../../utils/state_enum.dart';
+
+class ProfilePage extends StatefulWidget {
   static const routeName = "profile-page";
   const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => Provider.of<ProfileProviders>(context, listen: false).getUserProfile()
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,46 +49,68 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget buildAppBar(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: kPrimaryColor
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image.asset(
-              "assets/image_profile.png",
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<ProfileProviders>(
+      builder: (context, value, child) {
+        final state = value.stateGetUser;
+        if (state == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if(state == ResultState.Success){
+          return Container(
+              decoration: BoxDecoration(
+                  color: kPrimaryColor
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    "Dicky WIdya Angga Kusuma",
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlueDark),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: value.userModel.profilePhotoUrl,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.close),
+                    ),
                   ),
-                  Text(
-                    "@Dicky WIdya",
-                    style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          value.userModel.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.headline5?.copyWith(color: kBlueDark),
+                        ),
+                        Text(
+                          value.userModel.email,
+                          style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kGreyColor),
+                        )
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    iconSize: 30,
+                    icon: Icon(Icons.login, color: kRedColor),
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, SignInPage.routeName);
+                    },
                   )
                 ],
-              ),
-            ),
-            IconButton(
-              iconSize: 30,
-              icon: Icon(Icons.login, color: kRedColor),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, SignInPage.routeName);
-              },
-            )
-          ],
-        )
+              )
+          );
+        } else if(state == ResultState.Error){
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }else{
+          return Container();
+        }
+      },
     );
   }
 
@@ -101,5 +142,4 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-
 }

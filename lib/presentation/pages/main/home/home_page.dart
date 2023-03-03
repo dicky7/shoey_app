@@ -1,14 +1,35 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/data/models/category_model.dart';
+import 'package:shoes_app/presentation/providers/home/home_providers.dart';
 import 'package:shoes_app/presentation/widget/product_item.dart';
 import 'package:shoes_app/utils/helper_utils.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
 import '../../../../data/models/product_model.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static const routeName = "home-page";
 
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      //when tha app running or open for the first time, it will fetch list category product with id 0;
+      Provider.of<HomeProviders>(context, listen: false)
+        ..getProductByCategory(0)
+        ..getUserProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +40,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _headerGreetings(context, "Dicky widya angga kkkk"),
+              _headerGreetings(context),
               _banner(context),
               _category(context),
               _productCategory()
@@ -30,49 +51,70 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _headerGreetings(BuildContext context, String name) {
+  Widget _headerGreetings(BuildContext context) {
     final hour = DateTime.now().hour;
-    return Container(
-      margin: const EdgeInsets.only(top: 20, left: 24, right: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<HomeProviders>(
+      builder: (context, state, _) {
+        if (state.stateUser == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if(state.stateUser == ResultState.Success){
+          return Container(
+            margin: const EdgeInsets.only(top: 20, left: 24, right: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  (hour >= 0 && hour <= 12)
-                      ? "Howdy, Good Morning ☀️"
-                      : (hour >= 12 && hour <= 18)
-                          ? "Aloha, Good Afternoon 🌤️"
-                          : "Hey, Good Night 🌘",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2
-                      ?.copyWith(color: kGreyColor),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        (hour >= 0 && hour <= 12)
+                            ? "Howdy, Good Morning ☀️"
+                            : (hour >= 12 && hour <= 18)
+                            ? "Aloha, Good Afternoon 🌤️"
+                            : "Hey, Good Night 🌘",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText2
+                            ?.copyWith(color: kGreyColor),
+                      ),
+                      Text(
+                        state.userModel.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            ?.copyWith(color: kBlackColor, fontSize: 24),
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
                 ),
-                Text(
-                  name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      ?.copyWith(color: kBlackColor, fontSize: 24),
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 50),
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: state.userModel.profilePhotoUrl,
+                      width: 54,
+                      height: 54,
+                      placeholder: (context, url) => const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.close),
+                    )
                 )
               ],
             ),
-          ),
-          const SizedBox(width: 50),
-          ClipRRect(
-            child: Image.asset(
-              "assets/image_profile.png",
-              width: 54,
-              height: 54,
-            ),
-          )
-        ],
-      ),
+          );
+        } else if(state.stateUser == ResultState.Error) {
+          return Center(
+            child: Text(state.messageUser),
+          );
+        }else{
+          return const Center(
+            child: Text('Something Wrong, please try again later...',),
+          );
+        }
+      },
     );
   }
 
@@ -126,35 +168,61 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _category(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 24),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          "Category",
-          style: Theme.of(context).textTheme.headline5?.copyWith(color: kBlackColor),
-        ),
-        Container(
-          height: 45,
-          margin: const EdgeInsets.only(top: 12),
-          child: ListView.builder(
-            shrinkWrap: true,
-            primary: false,
-            scrollDirection: Axis.horizontal,
-            itemCount: listCategory.length,
-            itemBuilder: (context, index) {
-              final chip = listCategory[index];
-              return _chipCategory(context, false, chip, "1");
-            },
-          ),
-        ),
-      ]),
+    return Consumer<HomeProviders>(
+      builder: (context, state, child) {
+        if (state.stateCategory == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state.stateCategory == ResultState.Success) {
+          return Container(
+            margin: const EdgeInsets.only(left: 24),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                state.catagoryTitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline5
+                    ?.copyWith(color: kBlackColor),
+              ),
+              Container(
+                height: 45,
+                margin: const EdgeInsets.only(top: 12),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  primary: false,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.categoryList.length,
+                  itemBuilder: (context, index) {
+                    final category = state.categoryList[index];
+                    return _chipCategory(context, category);
+                  },
+                ),
+              ),
+            ]),
+          );
+        } else if (state.stateUser == ResultState.Error) {
+          return Center(
+            child: Text(state.messageCatagory),
+          );
+        } else {
+          return const Center(
+            child: Text('Something Wrong, please try again later...',),
+          );
+        }
+      }
     );
   }
 
-  Widget _chipCategory(
-      BuildContext context, bool isSelected, String text, String id) {
+  Widget _chipCategory(BuildContext context, CategoryModel category) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+
+        Provider.of<HomeProviders>(context, listen: false).setSelectedCategory(category.id);
+        print("category ${category.isSelected}");
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: 15,
@@ -163,13 +231,13 @@ class HomePage extends StatelessWidget {
         margin: const EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: isSelected ? kBlackColor : kGreyColor.withOpacity(0.1),
+          color: category.isSelected ? kBlackColor : kGreyColor.withOpacity(0.1),
         ),
         child: Center(
           child: Text(
-            text,
+            category.name,
             style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                color: isSelected ? kPrimaryColor : kBlackColor),
+                color: category.isSelected ? kPrimaryColor : kBlackColor),
           ),
         ),
       ),
@@ -177,28 +245,55 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _productCategory() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 30),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: GridView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: productList.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.6,
-          crossAxisSpacing: 20,
-        ),
-        itemBuilder: (context, index) {
-          final product = productList[index];
-          return Transform.translate(
-            offset: Offset(0.0, index.isOdd ? 35 : 0),      //this code to make ProductItem look stagered or not "sejajar"
-            child: ProductItem(
-              product: product,
+    return Consumer<HomeProviders>(
+      builder: (context, value, _) {
+        final state = value.stateProductByCatagory;
+        if (state == ResultState.Loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state == ResultState.Success) {
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: GridView.builder(
+              shrinkWrap: true,
+              primary: false,
+              itemCount: value.productListCategory.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.6,
+                crossAxisSpacing: 20,
+              ),
+              itemBuilder: (context, index) {
+                final product = value.productListCategory[index];
+                return Transform.translate(
+                  offset: Offset(0.0, index.isOdd ? 35 : 0),
+                  //this code to make ProductItem look stagered or not "sejajar"
+                  child: ProductItem(
+                    product: product,
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
+        } else if (state == ResultState.Empty) {
+          return Container(
+            margin: const EdgeInsets.only(top: 100),
+            child: Center(
+              child: Text(value.messageProductByCatagory),
+            ),
+          );
+        } else if (state == ResultState.Error) {
+          return Center(
+            child: Text(value.messageProductByCatagory),
+          );
+        } else {
+          return const Center(
+            child: Text('Something Wrong, please try again later...',),
+          );
+        }
+      }
     );
   }
 }

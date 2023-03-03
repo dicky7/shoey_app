@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/presentation/pages/main/cart/cart_page.dart';
 import 'package:shoes_app/presentation/pages/main/chat/chat_page.dart';
-import 'package:shoes_app/presentation/pages/main/favorite/favorite_page.dart';
 import 'package:shoes_app/presentation/pages/main/home/home_page.dart';
 import 'package:shoes_app/presentation/pages/main/profile/profile_page.dart';
+import 'package:shoes_app/presentation/pages/main/wishlist/wishlist_page.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
 class MainPage extends StatefulWidget {
@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
       case 1:
         return const ChatPage();
       case 3:
-        return const FavoritePage();
+        return const WishlistPage();
       case 4:
         return const ProfilePage();
       default:

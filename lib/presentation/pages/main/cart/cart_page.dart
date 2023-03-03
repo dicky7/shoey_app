@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/data/models/table/cart_table.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
+import 'package:shoes_app/presentation/pages/main/main_page.dart';
+import 'package:shoes_app/presentation/providers/cart/cart_providers.dart';
 import 'package:shoes_app/presentation/widget/cart_card.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   static const routeName = "cart-page";
   const CartPage({Key? key}) : super(key: key);
 
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => Provider.of<CartProviders>(context, listen: false).getCartList(),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -22,8 +39,30 @@ class CartPage extends StatelessWidget {
             style: Theme.of(context).textTheme.headline6?.copyWith(color: kGreyColor),
           ),
         ),
+        body: Consumer<CartProviders>(
+          builder: (context, providers, child) {
+            final state = providers.state;
+            if (state == ResultState.Loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } if (state == ResultState.Success) {
+              if (providers.cartList.isNotEmpty) {
+                return buildCartList(context, providers.cartList);
+              }else{
+                return _buildEmptyState(context);
+              }
+            } else if(state ==ResultState.Error){
+              return Center(
+                child: Text(providers.message),
+              );
+            }else{
+              return Container();
+            }
+          },
+
+      ),
         bottomNavigationBar: buildButtonPrice(context),
-        body: buildCartList(context),
       ),
     );
   }
@@ -66,6 +105,7 @@ class CartPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.subtitle1?.copyWith(color: kPrimaryColor),
                 ),
                 onPressed: () {
+                  Navigator.pushReplacementNamed(context, MainPage.routeName);
 
                 }
             ),
@@ -75,16 +115,16 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Widget buildCartList(BuildContext context){
-    return ListView(
+  Widget buildCartList(BuildContext context, List<CartTable> cartList){
+    return ListView.builder(
       padding: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
-      children: [
-        CartCard(),
-        CartCard(),
-        CartCard(),
-        CartCard(),
-        CartCard(),
-      ],
+      itemCount: cartList.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        final cart = cartList[index];
+        return CartCard(cartProduct: cart);
+
+      },
     );
   }
 
