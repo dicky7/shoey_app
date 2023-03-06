@@ -21,4 +21,4 @@ Star⭐ the repo if you like what you see😉.
 * Advanced UI
 
 # Screenshot App:
-<img src="https://github.com/dicky7/shoes_app/tree/master/assets/app_screenshot.png">&nbsp;&nbsp;
+<img src="https://github.com/dicky7/shoes_app/blob/providers/assets/app_screenshot.png">&nbsp;&nbsp;
