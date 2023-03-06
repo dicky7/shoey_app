@@ -1,16 +1,24 @@
-# shoes_app
+# Shoey App
 
-A new Flutter project.
+Shoey is a fully functional e-commerce app with multiple features built with flutter and dart.
 
-## Getting Started
+Star⭐ the repo if you like what you see😉.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
+* onBoarding
+* Home Page (select category & show list of shoes)
+* Detail Page
+* Shopping Cart
+* Checkout Shoes
+* Chat Feature
+* Wishlist Shoes
+* My Order
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Applied Concent
+* State Management with Provider
+* Local Database
+* Advanced UI
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Screenshot App:
+<img src="https://github.com/dicky7/shoes_app/tree/master/assets/app_screenshot.png">&nbsp;&nbsp;
