@@ -2,14 +2,18 @@ import 'package:get_it/get_it.dart';
 import 'package:shoes_app/data/datasource/db/cart_database_helper.dart';
 import 'package:shoes_app/data/datasource/db/cart_local_data_source.dart';
 import 'package:shoes_app/data/datasource/db/product_local_data_source.dart';
+import 'package:shoes_app/data/datasource/remote/transaction_remote_data_source.dart';
 import 'package:shoes_app/data/repository/cart_repository.dart';
+import 'package:shoes_app/data/repository/transaction_repository.dart';
 import 'package:shoes_app/data/repository/wishlist_repository.dart';
 import 'package:shoes_app/presentation/providers/auth/auth_providers.dart';
 import 'package:shoes_app/presentation/providers/cart/cart_providers.dart';
+import 'package:shoes_app/presentation/providers/cart/checkout_providers.dart';
 import 'package:shoes_app/presentation/providers/home/detail_product_providers.dart';
 import 'package:shoes_app/presentation/providers/home/home_providers.dart';
 import 'package:shoes_app/presentation/providers/preferences/preferences_provider.dart';
 import 'package:shoes_app/presentation/providers/profile/profile_providers.dart';
+import 'package:shoes_app/presentation/providers/transaction/transaction_providers.dart';
 import 'package:shoes_app/presentation/providers/wishlist/wishlist_providers.dart';
 import 'package:shoes_app/utils/helpers/dio_helper.dart';
 
@@ -49,11 +53,19 @@ void init(){
   locator.registerLazySingleton(
     () => CartProviders(locator()),
   );
+  locator.registerLazySingleton(
+    () => CheckoutProviders(
+         locator(),
+        locator()),
+  );
   locator.registerFactory(
     () => WishlistProviders(locator()),
   );
   locator.registerFactory(
     () => ProfileProviders(locator()),
+  );
+  locator.registerFactory(
+    () => TransactionProviders(locator()),
   );
 
 
@@ -73,6 +85,9 @@ void init(){
   locator.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(locator()),
   );
+  locator.registerLazySingleton<TransactionRepository>(
+    () => TransactionRepositoryImpl(locator()),
+  );
 
 
   // data source
@@ -90,6 +105,9 @@ void init(){
   );
   locator.registerLazySingleton<CartLocalDataSource>(
     () => CartLocalDataSourceImpl(locator()),
+  );
+  locator.registerLazySingleton<TransactionRemoteDataSource>(
+    () => TransactionRemoteDataSourceImpl(locator()),
   );
 
   //helper

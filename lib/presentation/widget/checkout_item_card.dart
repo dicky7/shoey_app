@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shoes_app/data/models/product_model.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
+import '../../data/models/table/cart_table.dart';
+
 class CheckoutItemCard extends StatelessWidget {
-  const CheckoutItemCard({Key? key}) : super(key: key);
+  final CartTable cartItem;
+  const CheckoutItemCard({Key? key, required this.cartItem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,7 @@ class CheckoutItemCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: CachedNetworkImage(
-              imageUrl: "https://shamo-backend.buildwithangga.id/storage/gallery/sW4VtliQPYnwvlbpxL5x6ZhKvbgBWT84OoiDyRsE.png",
+              imageUrl: cartItem.photo,
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, url, error) => const Icon(Icons.error),
               width: 110,
@@ -37,11 +41,11 @@ class CheckoutItemCard extends StatelessWidget {
               children: [
                 // NAME PRODUCT AND ICON TRASH
                 Text(
-                  "Terrex Urban Lows ",
+                  cartItem.name,
                   style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 20),
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // COLOR and Size
                 Row(
@@ -66,7 +70,11 @@ class CheckoutItemCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "\$100s5.0",
+                      NumberFormat.currency(
+                        locale: "en_us",
+                        customPattern: "\$",
+                        decimalDigits: 0
+                      ).format(cartItem.quantity * cartItem.price),
                       style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
                     ),
                     const SizedBox(width: 5),
@@ -75,7 +83,7 @@ class CheckoutItemCard extends StatelessWidget {
                       backgroundColor: kGreyColor.withOpacity(0.5),
                       child: Center(
                         child: Text(
-                          "10",
+                          cartItem.quantity.toString(),
                           style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 17),
                         ),
                       ),

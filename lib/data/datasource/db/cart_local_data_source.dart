@@ -63,7 +63,7 @@ class CartLocalDataSourceImpl extends CartLocalDataSource{
   Future<String> updateCart(CartTable cart) async{
     try{
       await cartDatabaseHelper.updateCart(cart);
-      return 'Update the Cart';
+      return cartUpdateSuccessMessage;
     }catch (e){
       throw DatabaseException(e.toString());
     }

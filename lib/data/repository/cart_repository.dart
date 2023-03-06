@@ -11,7 +11,7 @@ abstract class CartRepository{
   Future<Either<Failure, String>> updateCart(CartTable cart);
   Future<Either<Failure, String>> removeCartById(int id);
   Future<Either<Failure, String>> removeAllCart();
-  Future<bool> isAddedToCart(int id);
+  Future<Either<Failure, CartTable?>> isAddedToCart(int id);
 }
 class CartRepositoryImpl extends CartRepository{
   final CartLocalDataSource cartLocalDataSource;
@@ -69,12 +69,19 @@ class CartRepositoryImpl extends CartRepository{
     }
   }
 
-  //The method then checks if the result of the query is not null using a null check (result != null) and
-  // returns a boolean value indicating whether the product was found (true) or not (false).
+  //the method  checks whether a product with a specific ID is already added to a shopping cart.
   @override
-  Future<bool> isAddedToCart(int id) async{
-    final result = await cartLocalDataSource.getCartById(id);
-    return result != null;
+  Future<Either<Failure, CartTable?>> isAddedToCart(int id) async{
+    try{
+      //in cartLocalDataSource The method then checks whether the retrieved result is not null using a null check (result != null).
+      final result = await cartLocalDataSource.getCartById(id);
+      //If the result is not null, the method returns a Right value containing the retrieved CartTable object,
+      // indicating that the product is already added to the cart.
+      return Right(result);
+
+    }on DatabaseException catch(e){
+      return Left(DatabaseFailure(e.message));
+    }
   }
 
 }

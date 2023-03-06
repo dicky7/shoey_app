@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_app/data/models/table/cart_table.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
@@ -62,7 +63,28 @@ class _CartPageState extends State<CartPage> {
           },
 
       ),
-        bottomNavigationBar: buildButtonPrice(context),
+        bottomNavigationBar: Consumer<CartProviders>(
+          builder: (context, providers, child) {
+            final state = providers.state;
+            if (state == ResultState.Loading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } if (state == ResultState.Success) {
+              if (providers.cartList.isNotEmpty) {
+                return buildButtonPrice(context, providers.totalPrice, providers.cartList);
+              }else{
+                return _buildEmptyState(context);
+              }
+            } else if(state ==ResultState.Error){
+              return Center(
+                child: Text(providers.message),
+              );
+            }else{
+              return Container();
+            }
+          },
+        ),
       ),
     );
   }
@@ -128,7 +150,7 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget buildButtonPrice(BuildContext context){
+  Widget buildButtonPrice(BuildContext context, int totalPrice, List<CartTable> carts){
     return Container(
       decoration: BoxDecoration(
         color: kPrimaryColor,
@@ -151,7 +173,11 @@ class _CartPageState extends State<CartPage> {
               ),
               const SizedBox(height: 3),
               Text(
-                "\$234.0",
+                NumberFormat.currency(
+                  locale: "en_us",
+                  symbol: "\$",
+                  decimalDigits: 0
+                ).format(totalPrice),
                 style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 22),
               ),
                           ],
@@ -172,7 +198,7 @@ class _CartPageState extends State<CartPage> {
                 style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
               ),
               onPressed: () {
-                Navigator.pushNamed(context, CheckoutPage.routeName);
+                Navigator.pushNamed(context, CheckoutPage.routeName, arguments: carts);
 
               },
             ),

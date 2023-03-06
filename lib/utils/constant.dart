@@ -10,6 +10,7 @@ const wishlistRemoveSuccessMessage = 'Removed from Wishlist';
 //message cart
 const cartAddSuccessMessage = "Addedd Shoes To Cart";
 const cartRemoveSuccessMessage = "Removed Shoe from Cart";
+const cartUpdateSuccessMessage = "Update the Cart Succefully";
 
 //routeObserver
 final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();

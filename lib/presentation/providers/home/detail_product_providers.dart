@@ -35,6 +35,7 @@ class DetailProductProviders extends ChangeNotifier{
   String _cartMessage = "";
   String get cartMessage => _cartMessage;
 
+
   //this function to get detail product
   Future<void> getProductById(int idProduct)async{
     _state = ResultState.Loading;
@@ -93,22 +94,38 @@ class DetailProductProviders extends ChangeNotifier{
     await productWishlistStatus(id);
   }
 
-  Future<void> addToCart(ProductModel product) async{
-    //this variable will convert data product model to productTable
-    final bodyCart = CartTable(
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      photo: product.galleries[0].url,
-      quantity: 1
-    );
-    final result = await cartRepository.insertCart(bodyCart);
+
+  Future<void> addToCart(
+      ProductModel product, {
+        required void Function(String) onSuccess,
+        required void Function(String) onFailure,
+      }) async{
+
+    final result = await cartRepository.isAddedToCart(product.id);
     result.fold(
-      (error) {
-        return _cartMessage = error.message;
-      },
-      (success) {
-        return _cartMessage = success;
+      (error) => _cartMessage = error.message,
+      (cart) async{
+        if (cart != null) {
+          final existingCart = cart.setUpdateCart(cart.quantity + 1);
+          final result = await cartRepository.updateCart(existingCart);
+          result.fold(
+              (error) => onFailure(error.message),
+              (success) => onSuccess(success)
+          );
+        }else{
+          final bodyCart = CartTable(
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              photo: product.galleries[0].url,
+              quantity: 1
+          );
+          final result = await cartRepository.insertCart(bodyCart);
+          result.fold(
+              (error) => onFailure(error.message),
+              (success) => onSuccess(success)
+          );
+        }
       },
     );
   }

@@ -1,12 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_success_page.dart';
+import 'package:shoes_app/presentation/providers/cart/checkout_providers.dart';
 import 'package:shoes_app/presentation/widget/checkout_item_card.dart';
 import 'package:shoes_app/presentation/widget/custom_button.dart';
+import 'package:shoes_app/utils/state_enum.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
-class CheckoutPage extends StatelessWidget {
+import '../../../../data/models/table/cart_table.dart';
+import '../../../../utils/app_utils.dart';
+
+class CheckoutPage extends StatefulWidget {
   static const routeName = "checkout-page";
-  const CheckoutPage({Key? key}) : super(key: key);
+  final List<CartTable> cartList;
+  const CheckoutPage({Key? key, required this.cartList}) : super(key: key);
+
+  @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      //calling this method is to set the list of items in the cart to a new value, provided as a parameter to the method.
+      () => Provider.of<CheckoutProviders>(context, listen: false)
+          ..setCartItems(widget.cartList)
+          ..getTotalItem(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,21 +40,25 @@ class CheckoutPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: kBackgroundColor,
         appBar: buildAppBar(context),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildListItem(context),
-                buildDetailAdress(context),
-                buildPaymentSummary(context),
-                const SizedBox(height: 35),
-                buildCheckout(context)
-              ],
-            ),
-          ),
-        ),
+        body: Consumer<CheckoutProviders>(
+          builder: (context, providers, child) {
+            return SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildListItem(context, providers.cartList),
+                    buildDetailAdress(context),
+                    buildPaymentSummary(context, providers.totalItem, providers.totalPrice),
+                    const SizedBox(height: 35),
+                    buildCheckout(context)
+                  ],
+                ),
+              ),
+            );
+          },
+        )
       ),
     );
   }
@@ -46,7 +76,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget buildListItem(BuildContext context){
+  Widget buildListItem(BuildContext context, List<CartTable> cartList){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,13 +84,14 @@ class CheckoutPage extends StatelessWidget {
           "Order List",
           style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 22),
         ),
-        ListView(
+        ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            CheckoutItemCard(),
-            CheckoutItemCard(),
-          ],
+          itemCount: widget.cartList.length,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final cartItem = widget.cartList[index];
+            return CheckoutItemCard(cartItem: cartItem);
+          },
         ),
       ],
     );
@@ -109,7 +140,7 @@ class CheckoutPage extends StatelessWidget {
             ],
           ),
           Container(
-              margin: EdgeInsets.only(left: 12),
+              margin: const EdgeInsets.only(left: 12),
               height: 25,
               child: VerticalDivider(color: kGreyColor, thickness: 3)),
           Row(
@@ -144,7 +175,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget buildPaymentSummary(BuildContext context){
+  Widget buildPaymentSummary(BuildContext context, int totalItems, int totalPrice){
     return Container(
       margin: const EdgeInsets.only(top: 30),
       padding: const EdgeInsets.all(25),
@@ -169,7 +200,7 @@ class CheckoutPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle2?.copyWith(color: kGreyColor),
               ),
               Text(
-                "2 Items",
+                totalItems.toString(),
                 style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 16),
               ),
             ],
@@ -183,8 +214,12 @@ class CheckoutPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle2?.copyWith(color: kGreyColor),
               ),
               Text(
-                "\$575.96",
-                style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
+                NumberFormat.currency(
+                    locale: "en_us",
+                    symbol: "\$",
+                    decimalDigits: 0
+                ).format(totalPrice),
+                style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 16),
               ),
             ],
           ),
@@ -197,8 +232,8 @@ class CheckoutPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle2?.copyWith(color: kGreyColor),
               ),
               Text(
-                "Free",
-                style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 16),
+                "\$15",
+                style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
               ),
             ],
           ),
@@ -212,7 +247,11 @@ class CheckoutPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 16),
               ),
               Text(
-                "\$575.92",
+                NumberFormat.currency(
+                    locale: "en_us",
+                    symbol: "\$",
+                    decimalDigits: 0
+                ).format(totalPrice + 15),
                 style: Theme.of(context).textTheme.headline6?.copyWith(color: kGreenColor, fontSize: 16),
               ),
             ],
@@ -226,12 +265,13 @@ class CheckoutPage extends StatelessWidget {
     return CustomButton(
       title: "Checkout Now",
       onPressed: () {
-        Navigator.pushNamed(context, CheckoutSuccessPage.routeName);
+        Provider.of<CheckoutProviders>(context, listen: false).checkoutOrder(
+          onFailure: (message) => showErrorSnackbar(context, message),
+          onSuccess: (success) => Navigator.pushNamed(context, CheckoutSuccessPage.routeName),
+        );
+        Provider.of<CheckoutProviders>(context, listen: false).removeAllItem();
 
       },
     );
   }
-
-
-
 }

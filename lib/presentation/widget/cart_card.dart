@@ -91,8 +91,8 @@ class CartCard extends StatelessWidget {
                   children: [
                     Text(
                       NumberFormat.currency(
-                        locale: "en_US",
-                        symbol: "\$ ",
+                        locale: "en_us",
+                        symbol: "\$",
                         decimalDigits: 0
                       ).format(cartProduct.price),
                       style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),

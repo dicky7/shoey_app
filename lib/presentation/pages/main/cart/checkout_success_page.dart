@@ -3,6 +3,7 @@ import 'package:shoes_app/presentation/widget/custom_button.dart';
 
 import '../../../../utils/style/styles.dart';
 import '../main_page.dart';
+import '../profile/my_order_page.dart';
 
 class CheckoutSuccessPage extends StatelessWidget {
   static const routeName = 'checkout-success';
@@ -45,7 +46,7 @@ class CheckoutSuccessPage extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 90),
             title: "View My Order",
             onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(context, MainPage.routeName, (route) => false);
+              Navigator.pushNamedAndRemoveUntil(context, MyOrderPage.routeName, (route) => false);
             },
           )
         ],

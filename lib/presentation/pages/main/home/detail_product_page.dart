@@ -193,7 +193,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 children: [
                   Text(
                     NumberFormat.currency(
-                      locale:"en_US",
+                      locale:"en_us",
                       symbol: "\$",
                       decimalDigits: 0,
                     ).format(product.price),
@@ -417,24 +417,18 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 style: Theme.of(context).textTheme.button?.copyWith(color: kPrimaryColor),
               ),
               onPressed: () async{
-                await Provider.of<DetailProductProviders>(context,listen: false).addToCart(product);
-
-                //to fix warning DON'T use BuildContext across asynchronous gaps.
-                if (context.mounted) return;
-
-                final messageCart = Provider.of<DetailProductProviders>(context,listen: false).cartMessage;
-                if (messageCart == cartAddSuccessMessage) {
-                  showCustomDialog(
-                    context: context,
-                    icons: Icons.check_circle_outline,
-                    title: "Success",
-                    content: messageCart,
-                    buttonTitle: "View My Cart",
-                    onPressed: () => Navigator.pushNamed(context, CartPage.routeName),
-                  );
-                }else{
-                  showErrorSnackbar(context, messageCart);
-                }
+                await Provider.of<DetailProductProviders>(context,listen: false).addToCart(
+                    product,
+                    onSuccess: (message) => showCustomDialog(
+                      context: context,
+                      icons: Icons.check_circle_outline,
+                      title: "Success",
+                      content: "Addedd Shoes To Cart",
+                      buttonTitle: "View My Cart",
+                      onPressed: () => Navigator.pushNamed(context, CartPage.routeName),
+                    ),
+                    onFailure: (message) => showErrorSnackbar(context, message),
+                );
               },
             ),
           )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoes_app/data/datasource/preferences/preferences_helper.dart';
 import 'package:shoes_app/data/datasource/remote/auth_remote_data_source.dart';
+import 'package:shoes_app/data/models/table/cart_table.dart';
 import 'package:shoes_app/data/repository/auth_repository.dart';
 import 'package:shoes_app/presentation/pages/main/cart/cart_page.dart';
 import 'package:shoes_app/presentation/pages/main/cart/checkout_page.dart';
@@ -20,10 +21,12 @@ import 'package:shoes_app/presentation/pages/onBoarding/sign_up_page.dart';
 import 'package:shoes_app/presentation/pages/onBoarding/splash_page.dart';
 import 'package:shoes_app/presentation/providers/auth/auth_providers.dart';
 import 'package:shoes_app/presentation/providers/cart/cart_providers.dart';
+import 'package:shoes_app/presentation/providers/cart/checkout_providers.dart';
 import 'package:shoes_app/presentation/providers/home/detail_product_providers.dart';
 import 'package:shoes_app/presentation/providers/home/home_providers.dart';
 import 'package:shoes_app/presentation/providers/preferences/preferences_provider.dart';
 import 'package:shoes_app/presentation/providers/profile/profile_providers.dart';
+import 'package:shoes_app/presentation/providers/transaction/transaction_providers.dart';
 import 'package:shoes_app/presentation/providers/wishlist/wishlist_providers.dart';
 import 'package:shoes_app/utils/constant.dart';
 import 'package:shoes_app/utils/helpers/dio_helper.dart';
@@ -61,11 +64,16 @@ class MyApp extends StatelessWidget {
           create: (context) => di.locator<CartProviders>(),
         ),
         ChangeNotifierProvider(
+          create: (context) => di.locator<CheckoutProviders>(),
+        ),
+        ChangeNotifierProvider(
           create: (context) => di.locator<WishlistProviders>(),
         ),
-
         ChangeNotifierProvider(
             create: (context) => di.locator<ProfileProviders>()
+        ),
+        ChangeNotifierProvider(
+            create: (context) => di.locator<TransactionProviders>()
         ),
 
       ],
@@ -101,7 +109,10 @@ class MyApp extends StatelessWidget {
             case CartPage.routeName:
               return MaterialPageRoute(builder: (_) => const CartPage());
             case CheckoutPage.routeName:
-              return MaterialPageRoute(builder: (_) => const CheckoutPage());
+              final cartList = settings.arguments as List<CartTable>;
+              return MaterialPageRoute(builder: (_) => CheckoutPage(
+                cartList: cartList,
+              ));
             case CheckoutSuccessPage.routeName:
               return MaterialPageRoute(builder: (_) => const CheckoutSuccessPage());
             case WishlistPage.routeName:

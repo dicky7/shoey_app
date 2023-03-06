@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shoes_app/data/models/product_model.dart';
+import 'package:shoes_app/data/models/transaction_model.dart';
 import 'package:shoes_app/utils/style/styles.dart';
 
 class OrderItemCard extends StatelessWidget {
-  const OrderItemCard({Key? key}) : super(key: key);
+  final TransactiontModel transaction;
+  const OrderItemCard({Key? key, required this.transaction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +38,13 @@ class OrderItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // NAME PRODUCT AND ICON TRASH
+                // NAME PRODUCT
                 Text(
-                  "Terrex Urban Lows ",
+                  transaction.items[0].product.name,
                   style: Theme.of(context).textTheme.headline6?.copyWith(color: kBlackColor, fontSize: 20),
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // COLOR and Size
                 Row(
@@ -57,7 +60,7 @@ class OrderItemCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.subtitle2?.copyWith(color: kGreyColor),
                     ),
                     Text(
-                      "Qty = 3 items",
+                      "Qty = ${transaction.items[0].quantity}",
                       style: Theme.of(context).textTheme.subtitle2?.copyWith(color: kGreyColor),
                     ),
                   ],
@@ -71,7 +74,7 @@ class OrderItemCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)
                   ),
                   child: Text(
-                    "In Delivery",
+                    transaction.status,
                     style: Theme.of(context).textTheme.caption?.copyWith(color: kBlackColor, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -81,7 +84,11 @@ class OrderItemCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "\$100s5.0",
+                      NumberFormat.currency(
+                        decimalDigits: 0,
+                        symbol: "\$",
+                        locale: "en_us"
+                      ).format(transaction.totalPrice),
                       style: Theme.of(context).textTheme.headline6?.copyWith(color: kRedColor, fontSize: 16),
                     ),
                     const SizedBox(width: 5),
